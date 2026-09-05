@@ -22,8 +22,14 @@ export function ProductPage() {
 
     fetchProductBySlug(slug).then(({ data, error: fetchError }) => {
       if (cancelled) return
-      if (fetchError) setError(fetchError.message)
-      setProduct(data)
+      if (fetchError) {
+        setError(fetchError.message)
+      }else if (data){
+        setProduct(data)
+        const initialVariants = [...data.variants ?? []].sort((a, b) => a.sort_order - b.sort_order)
+        setSelectedId(initialVariants[0]?.id ?? null)
+      }
+      
       setLoading(false)
     })
 
@@ -36,11 +42,8 @@ export function ProductPage() {
     () => [...(product?.variants ?? [])].sort((a, b) => a.sort_order - b.sort_order),
     [product],
   )
-  useEffect(()=> {
-    setSelectedId(sortedVariants[0]?.id ?? null)
-  },[sortedVariants])
-  
-  const selectedVariant = sortedVariants.find((variant) => variant.id === selectedId)
+
+  const selectedVariant = sortedVariants.find((variant) => variant.id === selectedId) || sortedVariants[0] || null
 
   if (!configured) {
     return (
