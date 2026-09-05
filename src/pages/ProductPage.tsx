@@ -24,7 +24,6 @@ export function ProductPage() {
       if (cancelled) return
       if (fetchError) setError(fetchError.message)
       setProduct(data)
-      setSelectedId(data?.variants[0]?.id ?? null)
       setLoading(false)
     })
 
@@ -37,6 +36,10 @@ export function ProductPage() {
     () => [...(product?.variants ?? [])].sort((a, b) => a.sort_order - b.sort_order),
     [product],
   )
+  useEffect(()=> {
+    setSelectedId(sortedVariants[0]?.id ?? null)
+  },[sortedVariants])
+  
   const selectedVariant = sortedVariants.find((variant) => variant.id === selectedId)
 
   if (!configured) {
