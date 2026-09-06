@@ -16,7 +16,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-        <Link to="/" className="font-display text-2xl tracking-tight text-ink">
+        <Link to="/" className="font-display text-2xl tracking-tight text-ink" onClick={() => setOpen(false)}>
           {site.name}
         </Link>
 
@@ -36,6 +36,7 @@ export function Header() {
             to="/cart"
             className="text-sm text-ink/80 hover:text-ink"
             aria-label="Cart, 0 items"
+            onClick={() => setOpen(false)}
           >
             Cart (0)
           </Link>

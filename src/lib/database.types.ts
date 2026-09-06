@@ -4,7 +4,7 @@
 
 export type StockStatus = "in_stock" | "restocking" | "out"
 export type VariantOptionType = "shade" | "size" | "default"
-export type OrderStatus = "paid" | "ready_for_pickup" | "picked_up"
+export type OrderStatus = "pending" | "paid" | "ready_for_pickup" | "picked_up"
 
 type CategoryRow = {
   id: string
