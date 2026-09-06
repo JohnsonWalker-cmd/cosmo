@@ -20,10 +20,16 @@ export function ProductPage() {
     setLoading(true)
     setError(null)
 
+    // clean up product state 
+    setProduct(null)
+    setSelectedId(null)
+
     fetchProductBySlug(slug).then(({ data, error: fetchError }) => {
       if (cancelled) return
       if (fetchError) {
         setError(fetchError.message)
+        setLoading(false)
+        return
       }else if (data){
         setProduct(data)
         const initialVariants = [...data.variants ?? []].sort((a, b) => a.sort_order - b.sort_order)
