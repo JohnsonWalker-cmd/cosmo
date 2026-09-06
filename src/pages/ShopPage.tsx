@@ -1,16 +1,46 @@
+import { CatalogEmptyState } from "@/components/catalog/CatalogEmptyState"
+import { ProductGrid } from "@/components/catalog/ProductGrid"
 import { categories } from "@/config/site"
+import { fetchProducts, type ProductWithVariants } from "@/lib/catalog"
+import { isSupabaseConfigured } from "@/lib/supabase"
+import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 
 export function ShopPage() {
+  const configured = isSupabaseConfigured()
   const [params] = useSearchParams()
-  const selected = params.get("category")
+  const selected = params.get("category") ?? undefined
   const selectedName = categories.find((category) => category.slug === selected)?.name
+
+  const [products, setProducts] = useState<ProductWithVariants[]>([])
+  const [loading, setLoading] = useState(configured)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!configured) return
+
+    let cancelled = false
+    setLoading(true)
+    setError(null)
+
+    fetchProducts(selected).then(({ data, error: fetchError }) => {
+      if (cancelled) return
+      if (fetchError) setError(fetchError.message)
+      setProducts(data)
+      setLoading(false)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [configured, selected])
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16">
       <h1 className="font-display text-4xl">{selectedName ?? "Shop"}</h1>
       <p className="mt-3 max-w-xl text-muted">
-        Category filters are ready. Product cards connect to Supabase in the catalog slice.
+        Every product here is real Supabase data. Stock and shade counts come from each
+        product's variants.
       </p>
       <ul className="mt-8 flex flex-wrap gap-2">
         <li>
@@ -32,16 +62,20 @@ export function ShopPage() {
           </li>
         ))}
       </ul>
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {["01", "02", "03"].map((slot) => (
-          <div key={slot} className="border border-line">
-            <div className="bg-accent-soft aspect-[3/4]" />
-            <div className="p-4">
-              <p className="text-xs text-muted">Placeholder {slot}</p>
-              <p className="mt-1">Awaiting catalog</p>
-            </div>
-          </div>
-        ))}
+
+      <div className="mt-10">
+        {loading ? (
+          <p className="text-sm text-muted">Loading catalog…</p>
+        ) : error ? (
+          <p className="text-sm text-red-700">Couldn't load products: {error}</p>
+        ) : products.length === 0 ? (
+          <CatalogEmptyState
+            configured={configured}
+            message={selectedName ? `No products in ${selectedName} yet.` : undefined}
+          />
+        ) : (
+          <ProductGrid products={products} />
+        )}
       </div>
     </section>
   )

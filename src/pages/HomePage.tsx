@@ -1,7 +1,31 @@
+import { CatalogEmptyState } from "@/components/catalog/CatalogEmptyState"
+import { ProductGrid } from "@/components/catalog/ProductGrid"
 import { categories, formattedAddress, site } from "@/config/site"
+import { fetchFeaturedProducts, type ProductWithVariants } from "@/lib/catalog"
+import { isSupabaseConfigured } from "@/lib/supabase"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
 export function HomePage() {
+  const configured = isSupabaseConfigured()
+  const [featured, setFeatured] = useState<ProductWithVariants[]>([])
+  const [loading, setLoading] = useState(configured)
+
+  useEffect(() => {
+    if (!configured) return
+
+    let cancelled = false
+    fetchFeaturedProducts().then(({ data }) => {
+      if (cancelled) return
+      setFeatured(data)
+      setLoading(false)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [configured])
+
   return (
     <>
       <section className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-2 md:items-center md:py-24">
@@ -47,21 +71,18 @@ export function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-16">
         <p className="text-xs tracking-[0.2em] text-muted uppercase">Featured</p>
-        <h2 className="font-display mt-2 text-3xl">Products land in the next slice</h2>
+        <h2 className="font-display mt-2 text-3xl">A few favourites</h2>
         <p className="mt-3 max-w-lg text-muted">
-          The homepage, theme, and pickup copy already read from site config. The catalog
-          will load from Supabase once that slice ships.
+          Marked featured in the admin catalog. Swap these for a client's real bestsellers.
         </p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          {["01", "02", "03"].map((slot) => (
-            <div key={slot} className="border border-line">
-              <div className="bg-accent-soft aspect-[3/4]" />
-              <div className="p-4">
-                <p className="text-xs text-muted">Demo slot {slot}</p>
-                <p className="mt-1">Awaiting seed products</p>
-              </div>
-            </div>
-          ))}
+        <div className="mt-8">
+          {loading ? (
+            <p className="text-sm text-muted">Loading…</p>
+          ) : featured.length === 0 ? (
+            <CatalogEmptyState configured={configured} message="No featured products yet." />
+          ) : (
+            <ProductGrid products={featured} />
+          )}
         </div>
       </section>
 
