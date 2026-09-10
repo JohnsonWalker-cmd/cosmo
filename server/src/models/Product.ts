@@ -16,7 +16,7 @@ export interface Product{
     name : string
     brand : string | null
     description : string
-    categoryId : Schema.Types.ObjectId
+    categoryId : Schema.Types.ObjectId | null
     imageUrls : string[]
     featured: boolean
     variants : ProductVariant[]
