@@ -14,7 +14,7 @@ export interface Order{
     items : OrderItem[];
     totalCents : number;
     status : "pending" | "paid" | "ready_for_pickup" | "picked_up";
-    paystackReference : string | null;
+    paystackReference?: string;
     customerName : string;
     customerPhone: string;
     createdAt : Date;
@@ -35,7 +35,9 @@ const orderSchema = new Schema<Order>({
     items : { type : [orderItemSchema] , required : true},
     totalCents : { type : Number , required : true , min : 0},
     status : { type : String , enum : ["pending" , "paid" , "ready_for_pickup" , "picked_up"] , default: "pending"},
-    paystackReference : { type : String , default : null , unique: true , sparse: true},
+    // Omit when unpaid — sparse unique still indexes stored null, so default: null
+    // would make the second pending checkout fail with a duplicate-key error.
+    paystackReference : { type : String , required : false , unique: true , sparse: true},
     customerName : { type : String , required : true},
     customerPhone : { type : String , required : true},
 }, {timestamps: true})
