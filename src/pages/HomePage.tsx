@@ -1,10 +1,12 @@
 import { CatalogEmptyState } from "@/components/catalog/CatalogEmptyState"
 import { ProductGrid } from "@/components/catalog/ProductGrid"
-import { categories, formattedAddress, site } from "@/config/site"
+import { SkeletonHero, SkeletonProductGrid } from "@/components/SkeletonLoader"
+import { categories, site } from "@/config/site"
 import { fetchFeaturedProducts, type ProductWithVariants } from "@/lib/catalog"
 import { isSupabaseConfigured } from "@/lib/supabase"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { ShoppingBag, Truck, Lock, Star } from "lucide-react"
 
 export function HomePage() {
   const configured = isSupabaseConfigured()
@@ -28,73 +30,128 @@ export function HomePage() {
 
   return (
     <>
-      <section className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-2 md:items-center md:py-24">
-        <div>
-          <p className="text-xs tracking-[0.25em] text-accent uppercase">Pickup cosmetics</p>
-          <h1 className="font-display mt-4 text-5xl leading-tight md:text-6xl">{site.tagline}</h1>
-          <p className="mt-5 max-w-md text-muted">{site.description}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/shop"
-              className="bg-ink px-5 py-3 text-sm text-canvas hover:bg-ink/90"
-            >
-              Shop the catalog
-            </Link>
-            <Link
-              to="/pickup"
-              className="border border-line px-5 py-3 text-sm text-ink hover:border-ink"
-            >
-              Pickup details
-            </Link>
+      {/* Hero Section */}
+      {loading ? (
+        <SkeletonHero />
+      ) : (
+        <section className="bg-gradient-to-br from-accent/5 via-accent-soft/20 to-bg-secondary px-4 py-20 md:py-32">
+          <div className="mx-auto max-w-6xl">
+            <div className="grid gap-12 md:grid-cols-2 md:items-center">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wider text-accent">Beauty essentials</p>
+                <h1 className="font-display mt-4 text-5xl font-bold leading-tight md:text-6xl text-ink">
+                  {site.tagline}
+                </h1>
+                <p className="mt-5 max-w-md text-lg text-muted">{site.description}</p>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Link
+                    to="/shop"
+                    className="inline-flex items-center gap-2 bg-accent px-6 py-3 text-base font-semibold text-white hover:bg-accent/90 rounded-lg transition-all"
+                  >
+                    <ShoppingBag size={18} />
+                    Shop Now
+                  </Link>
+                  <Link
+                    to="/pickup"
+                    className="inline-flex items-center gap-2 border-2 border-accent px-6 py-3 text-base font-semibold text-accent hover:bg-accent/5 rounded-lg transition-all"
+                  >
+                    <Truck size={18} />
+                    How It Works
+                  </Link>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-accent-soft to-accent/10 aspect-[4/5] max-h-[28rem] w-full rounded-2xl flex items-center justify-center">
+                <ShoppingBag size={80} className="text-accent/20" />
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="bg-accent-soft aspect-[4/5] max-h-[28rem] w-full md:justify-self-end" />
-      </section>
+        </section>
+      )}
 
-      <section className="border-y border-line">
+      {/* Trust Indicators */}
+      <section className="border-b border-line bg-white">
         <div className="mx-auto max-w-6xl px-4 py-12">
-          <h2 className="font-display text-2xl">Shop by category</h2>
-          <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-            {categories.map((category) => (
-              <li key={category.slug}>
-                <Link
-                  to={`/shop?category=${category.slug}`}
-                  className="block border border-line px-4 py-8 text-center hover:border-ink"
-                >
-                  {category.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <p className="text-xs tracking-[0.2em] text-muted uppercase">Featured</p>
-        <h2 className="font-display mt-2 text-3xl">A few favourites</h2>
-        <p className="mt-3 max-w-lg text-muted">
-          Marked featured in the admin catalog. Swap these for a client's real bestsellers.
-        </p>
-        <div className="mt-8">
-          {loading ? (
-            <p className="text-sm text-muted">Loading…</p>
-          ) : featured.length === 0 ? (
-            <CatalogEmptyState configured={configured} message="No featured products yet." />
-          ) : (
-            <ProductGrid products={featured} />
-          )}
-        </div>
-      </section>
-
-      <section className="bg-ink text-canvas">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-12 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="font-display text-2xl">Pickup at the shop</p>
-            <p className="mt-2 text-sm text-canvas/70">{formattedAddress()}</p>
-            <p className="text-sm text-canvas/70">{site.hours}</p>
+          <div className="grid gap-8 md:grid-cols-3">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <Lock className="text-accent" size={24} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-ink">Secure Payment</h3>
+                <p className="mt-1 text-sm text-muted">All transactions via Paystack</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <Truck className="text-accent" size={24} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-ink">Easy Pickup</h3>
+                <p className="mt-1 text-sm text-muted">Order online, collect in-store</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <Star className="text-accent" size={24} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-ink">Premium Quality</h3>
+                <p className="mt-1 text-sm text-muted">Carefully curated brands</p>
+              </div>
+            </div>
           </div>
-          <Link to="/pickup" className="border border-canvas/30 px-5 py-3 text-sm hover:border-canvas">
-            See how pickup works
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="border-b border-line bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-16">
+          <div className="mb-8">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted">Browse</p>
+            <h2 className="font-display mt-2 text-3xl font-bold text-ink">Shop by Category</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+            {categories.map((category) => (
+              <Link
+                key={category.slug}
+                to={`/shop?category=${category.slug}`}
+                className="group rounded-lg border border-line bg-bg-secondary px-4 py-6 text-center font-medium transition-all hover:border-accent hover:shadow-md"
+              >
+                <span className="text-accent group-hover:underline">{category.name}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <div className="mb-10">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted">Bestsellers</p>
+          <h2 className="font-display mt-2 text-3xl font-bold text-ink">Trending Now</h2>
+          <p className="mt-3 max-w-lg text-muted">
+            Customer favorites and staff picks from our curated collection
+          </p>
+        </div>
+        {loading ? (
+          <SkeletonProductGrid />
+        ) : featured.length === 0 ? (
+          <CatalogEmptyState configured={configured} />
+        ) : (
+          <ProductGrid products={featured} />
+        )}
+      </section>
+
+      {/* Final CTA */}
+      <section className="bg-gradient-to-r from-accent/5 to-accent-soft/30">
+        <div className="mx-auto max-w-3xl px-4 py-16 text-center">
+          <h2 className="font-display text-3xl font-bold text-ink">Ready to glow?</h2>
+          <p className="mt-4 text-muted">Explore our complete collection and order for pickup today.</p>
+          <Link
+            to="/shop"
+            className="mt-8 inline-block rounded-lg bg-accent px-8 py-3 font-semibold text-white hover:bg-accent/90 transition-all"
+          >
+            Shop All Products
           </Link>
         </div>
       </section>

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { ArrowRight } from "lucide-react"
 
 type PagePlaceholderProps = {
   title: string
@@ -8,14 +9,20 @@ type PagePlaceholderProps = {
 
 export function PagePlaceholder({ title, body, next }: PagePlaceholderProps) {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-16">
-      <p className="text-xs tracking-[0.2em] text-muted uppercase">Coming in the next slice</p>
-      <h1 className="font-display mt-3 text-4xl">{title}</h1>
-      <p className="mt-4 max-w-xl text-muted">{body}</p>
-      {next ? <p className="mt-2 text-sm text-muted">{next}</p> : null}
-      <Link to="/shop" className="mt-8 inline-block text-sm text-accent underline-offset-4 hover:underline">
-        Back to shop
-      </Link>
+    <section className="mx-auto max-w-3xl px-4 py-24">
+      <div className="rounded-lg border border-line bg-bg-secondary p-8 text-center">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted">Coming soon</p>
+        <h1 className="font-display mt-4 text-3xl font-bold text-ink">{title}</h1>
+        <p className="mt-4 max-w-xl mx-auto text-muted">{body}</p>
+        {next ? <p className="mt-4 text-sm text-muted italic">{next}</p> : null}
+        <Link
+          to="/shop"
+          className="mt-8 inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent/90 transition-all"
+        >
+          Continue shopping
+          <ArrowRight size={16} />
+        </Link>
+      </div>
     </section>
   )
 }

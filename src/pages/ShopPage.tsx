@@ -1,10 +1,12 @@
 import { CatalogEmptyState } from "@/components/catalog/CatalogEmptyState"
 import { ProductGrid } from "@/components/catalog/ProductGrid"
+import { SkeletonProductGrid } from "@/components/SkeletonLoader"
 import { categories } from "@/config/site"
 import { fetchProducts, type ProductWithVariants } from "@/lib/catalog"
 import { isSupabaseConfigured } from "@/lib/supabase"
 import { useEffect, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
+import { ChevronLeft, AlertCircle } from "lucide-react"
 
 export function ShopPage() {
   const configured = isSupabaseConfigured()
@@ -36,47 +38,81 @@ export function ShopPage() {
   }, [configured, selected])
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-16">
-      <h1 className="font-display text-4xl">{selectedName ?? "Shop"}</h1>
-      <p className="mt-3 max-w-xl text-muted">
-        Every product here is real Supabase data. Stock and shade counts come from each
-        product's variants.
-      </p>
-      <ul className="mt-8 flex flex-wrap gap-2">
-        <li>
+    <>
+      {/* Page Header */}
+      <div className="border-b border-line bg-bg-secondary">
+        <div className="mx-auto max-w-6xl px-4 py-12">
+          <div className="flex items-center gap-3">
+            <Link to="/" className="text-muted hover:text-ink transition-colors">
+              <ChevronLeft size={20} />
+            </Link>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted">Shop</p>
+              <h1 className="font-display mt-1 text-4xl font-bold text-ink">
+                {selectedName ?? "All Products"}
+              </h1>
+            </div>
+          </div>
+          <p className="mt-4 max-w-2xl text-muted">
+            {selectedName
+              ? `Browse our selection of ${selectedName.toLowerCase()} products`
+              : "Explore our complete collection of premium beauty essentials"}
+          </p>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-sm font-medium text-muted">Filter:</span>
           <Link
             to="/shop"
-            className={`border px-3 py-1.5 text-sm ${selected ? "border-line" : "border-ink"}`}
+            className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-all ${
+              !selected
+                ? "bg-accent text-white"
+                : "border border-line bg-white hover:border-accent"
+            }`}
           >
             All
           </Link>
-        </li>
-        {categories.map((category) => (
-          <li key={category.slug}>
+          {categories.map((category) => (
             <Link
+              key={category.slug}
               to={`/shop?category=${category.slug}`}
-              className={`border px-3 py-1.5 text-sm ${selected === category.slug ? "border-ink" : "border-line"}`}
+              className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition-all ${
+                selected === category.slug
+                  ? "bg-accent text-white"
+                  : "border border-line bg-white hover:border-accent"
+              }`}
             >
               {category.name}
             </Link>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      </div>
 
-      <div className="mt-10">
+      {/* Products */}
+      <div className="mx-auto max-w-6xl px-4 pb-16">
         {loading ? (
-          <p className="text-sm text-muted">Loading catalog…</p>
+          <SkeletonProductGrid />
         ) : error ? (
-          <p className="text-sm text-red-700">Couldn't load products: {error}</p>
+          <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
+            <AlertCircle className="mx-auto text-red-600 mb-3" size={32} />
+            <p className="font-medium text-red-900">Couldn't load products</p>
+            <p className="mt-1 text-sm text-red-700">{error}</p>
+          </div>
         ) : products.length === 0 ? (
           <CatalogEmptyState
             configured={configured}
             message={selectedName ? `No products in ${selectedName} yet.` : undefined}
           />
         ) : (
-          <ProductGrid products={products} />
+          <>
+            <p className="mb-6 text-sm text-muted">{products.length} products</p>
+            <ProductGrid products={products} />
+          </>
         )}
       </div>
-    </section>
+    </>
   )
 }

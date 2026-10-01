@@ -1,6 +1,7 @@
 import { site } from "@/config/site"
 import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
+import { ShoppingBag, Menu, X } from "lucide-react"
 
 function navHrefIsActive(to: string, pathname: string, search: string) {
   const url = new URL(to, "http://local")
@@ -14,13 +15,17 @@ export function Header() {
   const { pathname, search } = useLocation()
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-        <Link to="/" className="font-display text-2xl tracking-tight text-ink" onClick={() => setOpen(false)}>
+        <Link
+          to="/"
+          className="font-display text-2xl font-bold tracking-tight text-accent"
+          onClick={() => setOpen(false)}
+        >
           {site.name}
         </Link>
 
-        <nav className="hidden items-center gap-5 lg:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">
           {site.nav.map((item) => (
             <NavItem
               key={item.to}
@@ -31,23 +36,24 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Link
             to="/cart"
-            className="text-sm text-ink/80 hover:text-ink"
-            aria-label="Cart, 0 items"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-ink hover:bg-bg-secondary transition-colors"
+            aria-label="Cart"
             onClick={() => setOpen(false)}
           >
-            Cart (0)
+            <ShoppingBag size={18} />
+            <span className="hidden sm:inline">Cart</span>
           </Link>
           <button
             type="button"
-            className="text-sm lg:hidden"
+            className="lg:hidden rounded-lg p-2 hover:bg-bg-secondary transition-colors"
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen((value) => !value)}
           >
-            {open ? "Close" : "Menu"}
+            {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
@@ -55,7 +61,7 @@ export function Header() {
       {open ? (
         <nav
           id="mobile-nav"
-          className="flex flex-col gap-3 border-t border-line px-4 py-4 lg:hidden"
+          className="flex flex-col gap-2 border-t border-line bg-bg-secondary px-4 py-3 lg:hidden"
           aria-label="Mobile"
         >
           {site.nav.map((item) => (
@@ -89,7 +95,11 @@ function NavItem({
       to={to}
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className={`whitespace-nowrap text-sm tracking-wide ${active ? "text-accent" : "text-ink/80 hover:text-ink"}`}
+      className={`text-sm font-medium transition-colors ${
+        active
+          ? "text-accent"
+          : "text-ink/70 hover:text-ink"
+      }`}
     >
       {label}
     </Link>
