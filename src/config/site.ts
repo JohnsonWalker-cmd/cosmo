@@ -1,8 +1,8 @@
 export const site = {
   name: "Cosmo",
-  tagline: "Makeup and skincare, ready for pickup.",
+  tagline: "Modern beauty essentials, ready for pickup.",
   description:
-    "A boutique cosmetics shop. Order online, pay securely, and collect at the counter.",
+    "Curated skincare, makeup, and deodorant essentials designed for effortless daily rituals.",
   currency: "GHS",
   currencySymbol: "₵",
   phone: "+233 00 000 0000",
