@@ -3,6 +3,7 @@ import cors from "cors"
 import express from "express"
 import { env } from "./env.js"
 import { connectDb } from "./lib/db.js"
+import { authRouter} from "./routes/auth.js"
 
 const app = express()
 
@@ -17,9 +18,13 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true })
 })
 
+app.use("/api/auth" , authRouter)
+
 // Central error handler: any route that calls next(err) — or throws inside
 // an async handler wrapped by asyncHandler (added later) — ends up here
 // instead of crashing the process or hanging the request.
+// This MUST be registered after every route/router, since Express only
+// routes next(err) calls to error handlers that come later in the stack.
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err)
   const message = err instanceof Error ? err.message : "Something went wrong"
