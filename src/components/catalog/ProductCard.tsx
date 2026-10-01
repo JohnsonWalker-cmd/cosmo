@@ -3,12 +3,6 @@ import { formatPrice, fromPriceCents, stockSummary, type ProductWithVariants } f
 import { Link } from "react-router-dom"
 import { AlertCircle, RotateCw } from "lucide-react"
 
-const stockLabel = {
-  in_stock: null,
-  restocking: "Restocking soon",
-  out: "Out of stock",
-} as const
-
 const shadeCount = (product: ProductWithVariants) =>
   product.variants.filter((variant) => variant.option_type === "shade").length
 
